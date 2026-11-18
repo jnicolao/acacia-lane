@@ -66,10 +66,20 @@ export default async function OrderConfirmation({
         {order.status === "AWAITING_RECIPIENT" && pickspot?.claim?.claimUrl && (
           <div className="mt-3 text-sm">
             <p>
-              Sent to <strong>{contact}</strong>. No message? Copy the link and
-              share it with your customer.
+              It goes to <strong>{contact}</strong>. No message yet? Open the
+              link here, or copy it to open on your phone.
             </p>
-            <CopyLink url={pickspot.claim.claimUrl} />
+            <div className="mt-2 flex flex-wrap gap-2">
+              <a
+                href={pickspot.claim.claimUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md bg-emerald-700 px-3 py-1.5 font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-emerald-800 active:scale-[0.97]"
+              >
+                Open the link
+              </a>
+              <CopyLink url={pickspot.claim.claimUrl} />
+            </div>
           </div>
         )}
       </section>
@@ -104,8 +114,9 @@ export default async function OrderConfirmation({
   );
 }
 
+// Fees are known once the customer has told PickSpot where to deliver.
 const amount = (value: number | null | undefined) =>
-  typeof value === "number" ? kes(value) : "Shown in PickSpot";
+  typeof value === "number" ? kes(value) : "After you give your address";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
