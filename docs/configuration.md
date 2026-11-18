@@ -43,6 +43,7 @@ Set where the shop is started. For local use, copy `.env.example` to
 | `PICKSPOT_API_URL` | For real orders | The address of the PickSpot API, ending in `/api/v1`. Without it "Check connection" says the shop has not been told where PickSpot is. It is not on the Settings page on purpose: it is decided by whoever installs the shop, not by the owner |
 | `PUBLIC_URL` | No | The shop's public web address. Used only when none is saved on the Settings page; a saved address wins |
 | `PICKSPOT_MOCK` | No | Set to `1` for [practice mode](#practice-mode). `npm run dev:practice` sets it for you |
+| `DATABASE_URL` | On Vercel and similar | A Postgres connection string. When it is set the shop keeps its data in that database instead of in files (see [A database instead of files](#a-database-instead-of-files)). Vercel sets it by itself when a Neon database is connected to the project |
 
 Example, for one run:
 
@@ -74,6 +75,26 @@ Things to know:
   name and then swapped in.
 - **One shop, one folder.** Two copies of the shop must not share a `.data`
   folder.
+
+### A database instead of files
+
+When `DATABASE_URL` is set, the same documents are kept in a Postgres table
+named `shop_data` instead, one row per file name above. The shop creates the
+table itself the first time it runs. This is how it runs on Vercel, where
+files do not last.
+
+- **Several copies of the shop can share it.** A change locks its row until
+  it is saved, so two copies never hand out the same order number or lose an
+  update that arrived at the same moment.
+- **Reads come from a shared cache**, emptied whenever a document is saved.
+  Pages that redraw every few seconds therefore do not keep asking the
+  database, which lets a free database sleep when nothing is happening.
+- **The practice rows stay apart** (`store.mock.json`, `image-keys.mock.json`),
+  as the practice files do.
+- **`.env.local` decides it on your computer too.** With `DATABASE_URL` in
+  `.env.local`, `npm run dev` and `npm run dev:practice` use that database.
+  Leave it out to use files.
+- **Back up the database** if the orders matter.
 
 **Times** are stored in UTC and shown in Kenyan time (Africa/Nairobi),
 wherever the server is. Change `timeZone` in `lib/format.ts` to show another.
@@ -113,6 +134,8 @@ order's contents secret.
 - When PickSpot says a phone number belongs to someone's account, the details
   are dropped before anything is stored or shown.
 - `.data/` and `.env.local` are in `.gitignore`.
+- With a database, the saved settings are in the database and its shared
+  cache, on the same hosting as the shop.
 
 ## Practice mode
 

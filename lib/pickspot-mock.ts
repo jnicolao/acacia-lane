@@ -60,9 +60,9 @@ export function getMe(): ApiResult<MeResponse> {
   });
 }
 
-export function createOrder(body: CreateOrderRequest): ApiResult<OrderResponse> {
+export async function createOrder(body: CreateOrderRequest): Promise<ApiResult<OrderResponse>> {
   const { reference, recipient, items, metadata } = body;
-  const existing = readDb().mockOrders[reference];
+  const existing = (await readDb()).mockOrders[reference];
   if (existing) return ok({ order: existing }, 200, true);
 
   const now = new Date();
@@ -105,14 +105,14 @@ export function createOrder(body: CreateOrderRequest): ApiResult<OrderResponse> 
     },
   };
 
-  updateDb((db) => {
+  await updateDb((db) => {
     db.mockOrders[reference] = order;
   });
   return ok({ order }, 201);
 }
 
-export function getOrder(id: string): ApiResult<OrderResponse> {
-  const order = Object.values(readDb().mockOrders).find((o) =>
+export async function getOrder(id: string): Promise<ApiResult<OrderResponse>> {
+  const order = Object.values((await readDb()).mockOrders).find((o) =>
     [o.reference, o.orderId, o.parcelCode, o.claimId].includes(id),
   );
   return order ? ok({ order }) : fail(404, "Order not found");
@@ -147,7 +147,7 @@ const STATUS_AFTER: Record<string, OrderStatus> = {
 export function recordMockEvent(
   reference: string,
   event: string,
-): WebhookEnvelope | null {
+): Promise<WebhookEnvelope | null> {
   const now = new Date().toISOString();
   return updateDb((db) => {
     const current = db.mockOrders[reference];

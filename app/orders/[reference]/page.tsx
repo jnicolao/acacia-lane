@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { AutoRefresh } from "@/components/auto-refresh";
 import { StatusBadge } from "@/components/status-badge";
-import { readDb } from "@/lib/db";
+import { findOrder } from "@/lib/db";
 import { kes } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
 import type { OrderStatus } from "@/lib/types";
@@ -37,7 +37,7 @@ export default async function OrderConfirmation({
 }: PageProps<"/orders/[reference]">) {
   await connection(); // always render from the data as it is now
   const { reference } = await params;
-  const order = readDb().orders.find((o) => o.reference === reference);
+  const order = await findOrder(reference);
   if (!order) notFound();
 
   const { pickspot } = order;

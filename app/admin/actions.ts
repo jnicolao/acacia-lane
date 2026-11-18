@@ -45,8 +45,8 @@ export async function saveSettingsAction(
   }
 
   // An empty key or secret field means "keep the one that is saved".
-  const saved = getSettings();
-  saveSettings({
+  const saved = await getSettings();
+  await saveSettings({
     publicUrl,
     apiKey: field(form, "apiKey") || saved.apiKey,
     webhookSecret: field(form, "webhookSecret") || saved.webhookSecret,
@@ -111,7 +111,7 @@ export async function checkForUpdatesAction(
 
   const now = new Date().toISOString();
   const { order: snapshot } = result.data;
-  updateDb((db) => {
+  await updateDb((db) => {
     const order = db.orders.find((o) => o.reference === reference);
     if (order) applySnapshot(order, snapshot, { at: now, source: "refresh" }, now);
   });
@@ -128,11 +128,11 @@ export async function practiceUpdateAction(
   if (!(await isLocalRequest())) return NOT_LOCAL;
   if (!isMockMode()) return { ok: false, message: "Only available in practice mode." };
 
-  const envelope = recordMockEvent(field(form, "reference"), field(form, "event"));
+  const envelope = await recordMockEvent(field(form, "reference"), field(form, "event"));
   if (!envelope) return { ok: false, message: "This order is not a practice order." };
 
   const rawBody = JSON.stringify(envelope);
-  const signature = signPayload(rawBody, getWebhookSecret(), Math.floor(Date.now() / 1000));
+  const signature = signPayload(rawBody, await getWebhookSecret(), Math.floor(Date.now() / 1000));
 
   // isLocalRequest() has established that Host is this machine.
   const host = (await headers()).get("host");

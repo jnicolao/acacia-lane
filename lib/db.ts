@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { readDataFile, writeDataFile } from "./data-file";
+import { readDataFile, updateDataFile } from "./data-file";
 import { isMockMode } from "./settings";
 import type { CreateOrderRequest, IntegrationOrder, OrderStatus } from "./types";
 
@@ -83,13 +83,20 @@ export function emptyDb(): Db {
 // Mock orders are kept apart from orders placed against the real API.
 const fileName = () => (isMockMode() ? "store.mock.json" : "store.json");
 
-export function readDb(): Db {
+export function readDb(): Promise<Db> {
   return readDataFile(fileName(), emptyDb);
 }
 
-export function updateDb<T>(change: (db: Db) => T): T {
-  const db = readDb();
-  const result = change(db);
-  writeDataFile(fileName(), db);
-  return result;
+// The order with this number. When it is not in the cached copy, the database
+// itself is asked: an order placed a moment ago may not be in the cache yet,
+// and the buyer is sent to its page straight away.
+export async function findOrder(reference: string): Promise<StoreOrder | undefined> {
+  const find = (db: Db) => db.orders.find((order) => order.reference === reference);
+  return find(await readDb()) ?? find(await readDataFile(fileName(), emptyDb, { cached: false }));
+}
+
+// Applies `change` and saves it, with no other change in between, even from
+// another copy of the shop. Returns what `change` returns.
+export function updateDb<T>(change: (db: Db) => T): Promise<T> {
+  return updateDataFile(fileName(), emptyDb, change);
 }

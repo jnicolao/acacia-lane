@@ -7,7 +7,7 @@ import { AutoRefresh } from "@/components/auto-refresh";
 import { LocalOnly } from "@/components/local-only";
 import { NoWebhookNotice } from "@/components/no-webhook-notice";
 import { StatusBadge } from "@/components/status-badge";
-import { readDb } from "@/lib/db";
+import { findOrder } from "@/lib/db";
 import { dateTime, kes } from "@/lib/format";
 import { isLocalRequest } from "@/lib/local-only";
 import { formatPhone } from "@/lib/phone";
@@ -33,7 +33,7 @@ export default async function AdminOrder({
   await connection(); // always render from the data as it is now
   if (!(await isLocalRequest())) return <LocalOnly />;
   const { reference } = await params;
-  const order = readDb().orders.find((o) => o.reference === reference);
+  const order = await findOrder(reference);
   if (!order) notFound();
 
   const { pickspot } = order;

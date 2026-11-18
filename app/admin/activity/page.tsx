@@ -14,7 +14,7 @@ export const instant = false;
 export default async function AdminActivity() {
   await connection(); // always render from the data as it is now
   if (!(await isLocalRequest())) return <LocalOnly />;
-  const activity = shopActivity(readDb()).slice(0, 100);
+  const activity = shopActivity(await readDb()).slice(0, 100);
 
   return (
     <>

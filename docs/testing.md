@@ -15,8 +15,8 @@ real order from start to finish.
 npm test
 ```
 
-There are 42 tests in six files, next to the code they test in `lib/`. They
-run in well under a second, need no internet, and never touch the shop's real
+There are 50 tests in eight files, next to the code they test in `lib/`. They
+run in about a second, need no internet, and never touch the shop's real
 data or call PickSpot.
 
 They cover the parts where a mistake would be costly or hard to see: deciding
@@ -103,12 +103,32 @@ Does anything technical leak onto the page?
   turned away, newest first, without the words "webhook", "HTTP" or
   "signature".
 
+### `lib/data-file.test.ts` (6 tests)
+
+Does the database keep the data the way the files do?
+
+- A document that was never saved reads as its starting value.
+- It can be read from the database itself, past the cache.
+- Each change starts from what is saved, is saved, and hands back its result.
+- Saving a whole document replaces it.
+- A change that fails leaves the document as it was, and the next one works.
+- Each save empties the shared cache for that document.
+
+### `lib/db.test.ts` (2 tests)
+
+Does a buyer always find the order they just placed?
+
+- An order in the cached copy is found without asking the database.
+- An order placed a moment ago, not yet in the cache, is found by asking the
+  database itself.
+
 ### How they stay away from real data
 
 The tests that would read or write files replace the file layer with one that
 lives in memory, and replace the network with a stand-in that records what was
 sent. The webhook tests build their own small shop in memory and pass it in.
-Nothing under `.data/` is read or written.
+The database tests run against Postgres inside the test itself (PGlite), never
+the one in `DATABASE_URL`. Nothing under `.data/` is read or written.
 
 ## Practice mode as a test bench
 

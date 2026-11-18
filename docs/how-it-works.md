@@ -15,7 +15,8 @@ and why it is built the way it is.
 
 Acacia Lane is one Next.js application. It serves the pages people see, and
 it runs the code that talks to PickSpot. There is nothing else to install or
-run: no database, no queue, no second service.
+run: no queue, no second service. Data is kept in files, or in a Postgres
+database where files do not last (on Vercel).
 
 ```mermaid
 flowchart LR
@@ -30,7 +31,7 @@ flowchart LR
         Hook["POST /api/pickspot/webhook"]
         Actions[Owner's buttons and<br/>catch-up]
         Lib["lib/: orders, wording,<br/>PickSpot client"]
-        Data[(".data/ files")]
+        Data[(".data/ files<br/>or Postgres")]
     end
 
     PickSpot[PickSpot]
@@ -170,7 +171,8 @@ The owner can also ask at any time with **Check for updates**.
 
 ## What the shop remembers
 
-Everything is in JSON files in the `.data` folder (see
+Everything is in JSON documents: files in the `.data` folder, or rows in a
+Postgres table when `DATABASE_URL` is set (see
 [Settings and data](configuration.md#data-files)). The shapes are in
 `lib/db.ts`.
 
@@ -255,7 +257,7 @@ again at 1001 and get somebody's old order back.
 | `webhook.ts` | Decides what to do with an update |
 | `orders.ts` | Records an answer from PickSpot on an order; tells news from old news |
 | `wording.ts` | Status names, what-happened sentences, order history, the Activity feed |
-| `db.ts`, `data-file.ts` | The shapes of what is stored, and reading and writing the files |
+| `db.ts`, `data-file.ts` | The shapes of what is stored, and reading and saving it, in files or in Postgres |
 | `settings.ts` | The saved settings, the environment, practice mode on or off |
 | `local-only.ts` | Decides whether a request may open the owner's side |
 | `format.ts` | Money and dates |
@@ -278,10 +280,12 @@ again at 1001 and get somebody's old order back.
 
 ## Why it is built this way
 
-**Files, not a database.** The shop is small and runs as one process. Reading
-and writing a file is done in one go, so two requests can never half-write the
-same data. The cost is that it needs a disk that lasts; see
-[Putting it online](deployment.md).
+**Files, or one table.** The shop is small. On one computer it runs as one
+process, and reading and writing a file is done in one go, so two requests can
+never half-write the same data. Where files do not last, the same documents go
+into one Postgres table. Each change locks its row until it is saved, and
+reads go through a shared cache, so pages that redraw every few seconds do not
+keep the database awake. See [Putting it online](deployment.md).
 
 **The order is saved before PickSpot is told.** PickSpot can send its first
 update before it has finished answering the request that created the order.

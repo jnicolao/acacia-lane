@@ -15,9 +15,10 @@ it can live on the internet, and how to run it once that is done.
 | Works today | Not yet |
 | --- | --- |
 | The shop, cart, checkout and order pages, for anyone | A sign-in for the owner |
-| Orders placed with PickSpot | Data that survives on hosting without a lasting disk |
-| Updates from PickSpot, checked and applied | Private order pages |
+| Orders placed with PickSpot | Private order pages |
+| Updates from PickSpot, checked and applied | |
 | The owner's side, on the shop's own computer | |
+| Data on hosting without a lasting disk, in a Postgres database | |
 
 ## Two things to sort out first
 
@@ -41,19 +42,21 @@ numbers and can replace the API key.
 
 ### 2. Decide where data lives
 
-Orders, the saved API key and the signing secret are files in `.data/`.
+Orders, the saved API key and the signing secret are files in `.data/`, or
+rows in a Postgres database when `DATABASE_URL` is set.
 
 - **On a server with a lasting disk** (a virtual machine, a container with a
   mounted volume) nothing needs to change. Make sure `.data/` is on the disk
   that lasts, and back it up.
 - **On hosting that starts fresh for each request or each release** (Vercel,
-  Netlify and similar) the files do not last. Orders would vanish and the
-  shop would forget its API key. There, `lib/data-file.ts` has to be replaced
-  with a database. It has two functions, `readDataFile` and `writeDataFile`,
-  and everything else goes through them.
+  Netlify and similar) files do not last, so use a database. On Vercel, open
+  the project's **Storage** tab and add Neon Postgres (it has a free plan). It
+  sets `DATABASE_URL`, and the shop uses it from the next deployment. See
+  [A database instead of files](configuration.md#a-database-instead-of-files).
 
-Also note that the shop assumes it runs as **one process**. Two copies sharing
-the same data could both hand out the same order number.
+With files, the shop assumes it runs as **one process**: two copies sharing
+the same folder could both hand out the same order number. With a database,
+any number of copies can run at once.
 
 ## Choosing where to host
 
@@ -61,7 +64,7 @@ the same data could both hand out the same order number.
 | --- | --- | --- | --- |
 | Your own computer with a tunnel | No | Files, as they are | Works today. Good for showing it to someone |
 | A server or container with a lasting disk | Yes | Files, as they are | The shortest path |
-| Vercel, Netlify and similar | Yes | Needs a database | More work |
+| Vercel, Netlify and similar | Yes | A Postgres database (`DATABASE_URL`) | Works once the sign-in exists |
 
 ## Running it on a server
 
@@ -122,8 +125,8 @@ the tunnel.
 ## Before you open the doors
 
 - [ ] The owner can sign in, and a stranger cannot open `/admin/orders`.
-- [ ] `.data/` is on a disk that survives a restart and a new release, and is
-      backed up.
+- [ ] The data lasts: `.data/` is on a disk that survives a restart and a new
+      release, or `DATABASE_URL` is set. Either way, it is backed up.
 - [ ] `PICKSPOT_API_URL` points at the right PickSpot.
 - [ ] "Check connection" names your business and has no warning about a
       pickup location.
