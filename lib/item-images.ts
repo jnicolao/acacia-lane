@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { readDataFile, writeDataFile } from "./data-file";
+import { readDataFile, updateDataFile } from "./data-file";
 import type { OrderLine } from "./db";
 import { uploadItemImage } from "./pickspot";
 import { products } from "./products";
@@ -20,8 +20,8 @@ const keysFile = () => (isMockMode() ? "image-keys.mock.json" : "image-keys.json
 // null when every line got one, otherwise why not. A missing picture never
 // stops an order: it goes out without one.
 export async function attachItemImages(lines: OrderLine[]): Promise<string | null> {
-  const { apiBaseUrl } = getSettings();
-  const remembered = readDataFile<Record<string, string>>(keysFile(), () => ({}));
+  const { apiBaseUrl } = await getSettings();
+  const remembered = { ...(await readDataFile<Record<string, string>>(keysFile(), () => ({}))) };
   let uploaded = false;
   let problem: string | null = null;
 
@@ -47,6 +47,7 @@ export async function attachItemImages(lines: OrderLine[]): Promise<string | nul
     line.imageKey = remembered[id];
   }
 
-  if (uploaded) writeDataFile(keysFile(), remembered);
+  // Merged into what is saved now: another order may have added keys meanwhile.
+  if (uploaded) await updateDataFile(keysFile(), () => ({}), (saved) => Object.assign(saved, remembered));
   return problem;
 }

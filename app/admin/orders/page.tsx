@@ -15,7 +15,7 @@ export const instant = false;
 export default async function AdminOrders() {
   await connection(); // always render from the data as it is now
   if (!(await isLocalRequest())) return <LocalOnly />;
-  const orders = readDb().orders.toReversed();
+  const orders = (await readDb()).orders.toReversed();
 
   return (
     <>

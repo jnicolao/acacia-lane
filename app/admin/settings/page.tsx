@@ -35,9 +35,9 @@ export const instant = false;
 export default async function AdminSettings() {
   await connection(); // always render from the data as it is now
   if (!(await isLocalRequest())) return <LocalOnly />;
-  const settings = getSettings();
-  const publicUrl = getPublicUrl();
-  const db = readDb();
+  const settings = await getSettings();
+  const publicUrl = await getPublicUrl();
+  const db = await readDb();
   const known = new Set(db.orders.map((order) => order.reference));
   // Keyed by position in the log, so open rows stay open when new ones arrive.
   const deliveries = db.webhookLog.map((entry, key) => ({ entry, key })).reverse();

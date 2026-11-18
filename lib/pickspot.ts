@@ -15,7 +15,7 @@ async function request<T>(
   path: string,
   body?: unknown,
 ): Promise<ApiResult<T>> {
-  const { apiBaseUrl, apiKey } = getSettings();
+  const { apiBaseUrl, apiKey } = await getSettings();
   if (!apiBaseUrl) {
     return {
       ok: false,

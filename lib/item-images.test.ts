@@ -6,14 +6,18 @@ import { linesToPickspotItems } from "./products";
 // The store's data files, kept in memory, and a store set up for real mode.
 const files: Record<string, unknown> = {};
 vi.mock("./data-file", () => ({
-  readDataFile: (name: string, fallback: () => unknown) => files[name] ?? fallback(),
-  writeDataFile: (name: string, data: unknown) => {
-    files[name] = structuredClone(data);
+  readDataFile: async (name: string, fallback: () => unknown) =>
+    structuredClone(files[name]) ?? fallback(),
+  updateDataFile: async (name: string, fallback: () => unknown, change: (data: unknown) => unknown) => {
+    const data = structuredClone(files[name]) ?? fallback();
+    const result = change(data);
+    files[name] = data;
+    return result;
   },
 }));
 const settings = { apiBaseUrl: "https://api.test/v1", apiKey: "pk_test_unit" };
 vi.mock("./settings", () => ({
-  getSettings: () => settings,
+  getSettings: async () => settings,
   isMockMode: () => false,
 }));
 

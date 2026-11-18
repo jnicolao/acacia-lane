@@ -120,7 +120,8 @@ sequenceDiagram
 - [TypeScript](https://www.typescriptlang.org)
 - [Tailwind CSS 4](https://tailwindcss.com)
 - [Vitest](https://vitest.dev) for the tests
-- No database and no other services: the shop keeps its data in files
+- No other services needed: the shop keeps its data in files, or in Postgres
+  when `DATABASE_URL` is set (as on Vercel)
 
 ## Where things are
 
@@ -168,13 +169,14 @@ docs/                           the guides listed above
 
 ## Where it stands
 
-The shop works end to end on one computer. Before it can live on the internet
-two things need doing, both described in [Putting it online](docs/deployment.md):
+The shop works end to end on one computer. Before it can live on the internet,
+[Putting it online](docs/deployment.md) describes what is needed:
 
-- **The owner's side has no sign-in.** It only opens on the computer the shop
-  runs on.
-- **Data is kept in files.** That suits a server with a lasting disk, not
-  hosting that starts fresh for every request.
+- **The owner's side has no sign-in yet.** It only opens on the computer the
+  shop runs on.
+- **Data needs a lasting home.** Files suit a server with a lasting disk. On
+  hosting that starts fresh for every request, such as Vercel, the shop keeps
+  its data in a Postgres database instead.
 
 Also worth knowing: the customer's order page can be opened by anyone who
 knows the order number, and product pictures reach PickSpot only if PickSpot

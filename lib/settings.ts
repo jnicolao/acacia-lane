@@ -18,8 +18,8 @@ export function isMockMode(): boolean {
 
 const stripSlashes = (url: string) => url.trim().replace(/\/+$/, "");
 
-export function getSettings(): Settings {
-  const saved = readDataFile<Partial<Settings>>("settings.json", () => ({}));
+export async function getSettings(): Promise<Settings> {
+  const saved = await readDataFile<Partial<Settings>>("settings.json", () => ({}));
   return {
     // Which PickSpot the shop talks to is decided where the shop is installed
     // (the PICKSPOT_API_URL environment variable), not on the settings page.
@@ -33,19 +33,19 @@ export function getSettings(): Settings {
 // The address PickSpot can reach this store on (the tunnel address while
 // testing locally). The saved setting wins; the PUBLIC_URL environment
 // variable is used when none is saved.
-export function getPublicUrl(): string {
-  return stripSlashes(getSettings().publicUrl || process.env.PUBLIC_URL || "");
+export async function getPublicUrl(): Promise<string> {
+  return stripSlashes((await getSettings()).publicUrl || process.env.PUBLIC_URL || "");
 }
 
-export function saveSettings(settings: Omit<Settings, "apiBaseUrl">): void {
-  writeDataFile("settings.json", {
+export async function saveSettings(settings: Omit<Settings, "apiBaseUrl">): Promise<void> {
+  await writeDataFile("settings.json", {
     ...settings,
     publicUrl: stripSlashes(settings.publicUrl),
   });
 }
 
-export function getWebhookSecret(): string {
-  return getSettings().webhookSecret || (isMockMode() ? MOCK_WEBHOOK_SECRET : "");
+export async function getWebhookSecret(): Promise<string> {
+  return (await getSettings()).webhookSecret || (isMockMode() ? MOCK_WEBHOOK_SECRET : "");
 }
 
 // "pk_test_h3Kq••••••••9f2a": enough to recognise which credential is saved.

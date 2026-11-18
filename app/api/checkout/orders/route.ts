@@ -21,8 +21,8 @@ export async function POST(request: Request) {
 
   // Like a real shop, save the order under its own number first. A webhook
   // that arrives before PickSpot's answer then already finds the order.
-  const publicUrl = getPublicUrl();
-  const orderRequest = updateDb((db) => {
+  const publicUrl = await getPublicUrl();
+  const orderRequest = await updateDb((db) => {
     const reference = `${SHOP_INITIALS}-${db.storeTag}-${db.nextOrderNumber++}`;
     const orderRequest = buildOrderRequest(reference, lines, { phone }, publicUrl);
     db.orders.push({
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
 
   if (!result.ok) {
     // PickSpot did not take the order, so the shop does not keep it either.
-    updateDb((db) => {
+    await updateDb((db) => {
       db.orders = db.orders.filter((order) => order.reference !== reference);
     });
     console.error(`Order ${reference} was not placed: ${result.status} ${result.message}`);
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
   const { status, replay, data } = result;
   const now = new Date().toISOString();
-  updateDb((db) => {
+  await updateDb((db) => {
     const order = db.orders.find((o) => o.reference === reference);
     if (!order) return;
     order.request = orderRequest;

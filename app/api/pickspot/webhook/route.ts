@@ -6,11 +6,12 @@ import { processWebhook } from "@/lib/webhook";
 // because the signature covers the raw bytes, not the parsed JSON.
 export async function POST(request: Request) {
   const rawBody = await request.text();
-  const result = updateDb((db) =>
+  const secret = await getWebhookSecret();
+  const result = await updateDb((db) =>
     processWebhook(db, {
       rawBody,
       signature: request.headers.get("x-pickspot-signature"),
-      secret: getWebhookSecret(),
+      secret,
     }),
   );
   return Response.json(
