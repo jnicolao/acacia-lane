@@ -63,7 +63,7 @@ describe("attachItemImages", () => {
     await attachItemImages([line("coffee")]);
 
     const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe("https://api.test/v1/file/upload-image/parcel-item");
+    expect(url).toBe("https://api.test/v1/integrations/images");
     expect(init.method).toBe("POST");
     // No content type of our own: fetch adds the multipart one with its boundary.
     expect(init.headers).toEqual({ "x-api-key": "pk_test_unit" });

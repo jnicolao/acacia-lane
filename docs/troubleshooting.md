@@ -67,9 +67,9 @@ number from another country needs its country code with a `+`.
 Open "Technical details" on the order and look under "Product pictures sent".
 
 - **"no picture sent"**: the upload failed. The reason is in the note beside
-  the first entry of "Every update, as recorded". The usual one is that
-  PickSpot does not accept picture uploads from the shop's API key; that is
-  for PickSpot to switch on.
+  the first entry of "Every update, as recorded". A 401 means the API key is
+  wrong (press "Check connection" in Settings); a 400 means the photo is not
+  an image or is larger than 10 MB.
 - **A key is listed**: the shop did its part. Check the order in PickSpot.
 
 The order is placed either way. Pictures never hold one up.

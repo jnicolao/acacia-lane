@@ -98,8 +98,9 @@ export async function getOrder(id: string): Promise<ApiResult<OrderResponse>> {
     : request("GET", `/integrations/checkout/orders/${encodeURIComponent(id)}`);
 }
 
-// Uploads one item picture (JPEG, PNG or WebP, at most 10 MB) and returns the
-// key to pass in `items[].imageKeys` when creating the order.
+// Uploads one item picture (any image type, at most 10 MB) with the shop's API
+// key, and returns the key to pass in `items[].imageKeys` when creating the
+// order. PickSpot also answers a `url`, for previewing only.
 export async function uploadItemImage(
   image: Blob,
   fileName: string,
@@ -107,5 +108,5 @@ export async function uploadItemImage(
   if (isMockMode()) return mock.uploadItemImage();
   const form = new FormData();
   form.append("image", image, fileName);
-  return request("POST", "/file/upload-image/parcel-item", form);
+  return request("POST", "/integrations/images", form);
 }
