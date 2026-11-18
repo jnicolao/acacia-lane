@@ -160,7 +160,7 @@ latest one on the order and uses these parts of it:
 | `status` | The order's badge and what the customer is told to do next |
 | `updatedAt` | Telling new from old |
 | `pricing` | The delivery fee, the service fee and the total. Unknown until the customer has given an address |
-| `claim.claimUrl` | The customer's link. The order page has a **Copy the link** button for it, to share in case the WhatsApp message does not arrive |
+| `claim.claimUrl` | The customer's link. The order page lets the customer open it or copy it, in case the WhatsApp message does not arrive |
 | `claim.whatsapp` | Whether the WhatsApp message is on its way, sent, or could not be sent |
 | `parcelCode` | The PickSpot parcel number shown to the owner |
 | `dispatch.scheduledFor`, `dispatch.courier.name` | When the rider is due and who it is |

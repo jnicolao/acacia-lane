@@ -16,7 +16,7 @@ export function CopyLink({ url }: { url: string }) {
             () => setState("blocked"),
           )
         }
-        className="mt-2 rounded-md border border-emerald-700 px-3 py-1.5 text-sm font-semibold text-emerald-800 transition-[transform,background-color] duration-150 ease-out hover:bg-emerald-100 active:scale-[0.97]"
+        className="rounded-md border border-emerald-700 px-3 py-1.5 text-sm font-semibold text-emerald-800 transition-[transform,background-color] duration-150 ease-out hover:bg-emerald-100 active:scale-[0.97]"
       >
         {state === "copied" ? "Copied" : "Copy the link"}
       </button>
@@ -26,7 +26,7 @@ export function CopyLink({ url }: { url: string }) {
           value={url}
           aria-label="The link"
           onFocus={(event) => event.target.select()}
-          className="mt-2 block w-full rounded-md border border-stone-300 bg-white px-3 py-2 font-mono text-xs"
+          className="basis-full rounded-md border border-stone-300 bg-white px-3 py-2 font-mono text-xs"
         />
       )}
     </>
