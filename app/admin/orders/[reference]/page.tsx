@@ -140,16 +140,6 @@ export default async function AdminOrder({
                   </div>
                 ))}
             </dl>
-            {pickspot?.dispatch?.trackingUrl && (
-              <p className="mt-4">
-                <a
-                  href={pickspot.dispatch.trackingUrl}
-                  className="font-medium text-emerald-700 underline"
-                >
-                  Follow the rider on the map
-                </a>
-              </p>
-            )}
           </section>
 
           <section className="rounded-xl border border-stone-200 bg-white p-5">
