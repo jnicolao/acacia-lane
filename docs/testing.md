@@ -193,6 +193,8 @@ npm test
 npm run build
 ```
 
-All four should finish without errors.
+All four should finish without errors. GitHub runs the same four on every
+push to `main` and every pull request (`.github/workflows/ci.yml`), and shows
+the result next to the commit or pull request.
 
 Next: [When something is wrong](troubleshooting.md).
