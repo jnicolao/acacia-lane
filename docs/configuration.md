@@ -43,6 +43,7 @@ Set where the shop is started. For local use, copy `.env.example` to
 | `PICKSPOT_API_URL` | For real orders | The address of the PickSpot API, ending in `/api/v1`. Without it "Check connection" says the shop has not been told where PickSpot is. It is not on the Settings page on purpose: it is decided by whoever installs the shop, not by the owner |
 | `PUBLIC_URL` | No | The shop's public web address. Used only when none is saved on the Settings page; a saved address wins |
 | `PICKSPOT_MOCK` | No | Set to `1` for [practice mode](#practice-mode). `npm run dev:practice` sets it for you |
+| `ADMIN_PASSWORD` | To open the owner's side away from the shop's computer | The owner's password, asked for on the owner's pages anywhere but `localhost` (see [Who can open what](#who-can-open-what)). Pick a long one and set it where the shop is hosted, for example in Vercel's Environment Variables. Never put it in a committed file |
 | `DATABASE_URL` | On Vercel and similar | A Postgres connection string. When it is set the shop keeps its data in that database instead of in files (see [A database instead of files](#a-database-instead-of-files)). Vercel sets it by itself when a Neon database is connected to the project |
 
 Example, for one run:
@@ -63,6 +64,7 @@ created on first use and is never committed.
 | `store.mock.json` | The same, for practice orders, plus the pretend PickSpot's own view of each order | Practice |
 | `image-keys.json` | Which product pictures have been uploaded, and their keys | Real |
 | `image-keys.mock.json` | The same, for practice | Practice |
+| `sign-in.json` | The secret that signs the owner's sign-in cookie, and recent wrong passwords | Both |
 
 Things to know:
 
@@ -106,17 +108,24 @@ wherever the server is. Change `timeZone` in `lib/format.ts` to show another.
 | The shop, cart and checkout | Anyone |
 | An order page (`/orders/<order number>`) | Anyone who knows the order number |
 | The webhook URL | Anyone can send to it; only updates with the right signature are believed |
-| **Manage shop** (`/admin/...`) and its buttons | Only a browser on the computer the shop runs on |
+| **Manage shop** (`/admin/...`) and its buttons | A browser on the computer the shop runs on, or one signed in with the owner's password |
 
-The owner's side has no sign-in. Instead, `lib/local-only.ts` looks at the
-address the request was made to. If the request came to `localhost` it is let
-in; if it came through a public address (a domain or a tunnel) it gets a page
-saying "This area is for the shop owner". The check is made by every owner's
-page and again by every owner's button, because a button's action can be
-called without visiting its page.
+`isOwner` in `lib/owner.ts` decides. The check is made by every owner's page
+and again by every owner's button, because a button's action can be called
+without visiting its page.
 
-This is enough for a shop running on your own computer. It is not enough for a
-hosted shop: see [Putting it online](deployment.md#1-give-the-owner-a-way-in).
+- **On the shop's own computer** (`localhost`) the owner's side opens without
+  a password.
+- **Anywhere else** (a domain, a tunnel, Vercel) it shows "This area is for
+  the shop owner" with a password box, once `ADMIN_PASSWORD` is set. Without
+  it there is no way in from outside.
+- **A signed-in browser stays signed in for 7 days**, or until **Sign out** on
+  the Settings page. Its cookie cannot be read by scripts, is only sent over
+  HTTPS on a live shop, and is signed with a random secret the shop keeps with
+  its data. Changing `ADMIN_PASSWORD` signs every browser out.
+- **Wrong passwords are slowed down.** After 5 wrong tries from one address,
+  that address has to wait 15 minutes. Only a hash of the address is kept, and
+  only for those 15 minutes.
 
 Order pages are not private. An order number has a random part, but it is
 short and the counter after it is predictable. Do not rely on it to keep an
@@ -126,6 +135,8 @@ order's contents secret.
 
 - The API key and the signing secret are read on the server each time they
   are needed. No page, script or response sent to the browser contains them.
+- The owner's password lives only in `ADMIN_PASSWORD`. The shop compares
+  what is typed against it and never stores or shows it.
 - The Settings page shows a saved value masked: the first few characters, a
   row of dots, the last four. That is enough to tell which key is saved and
   not enough to use it.

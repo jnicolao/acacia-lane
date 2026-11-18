@@ -15,7 +15,7 @@ real order from start to finish.
 npm test
 ```
 
-There are 50 tests in eight files, next to the code they test in `lib/`. They
+There are 56 tests in nine files, next to the code they test in `lib/`. They
 run in about a second, need no internet, and never touch the shop's real
 data or call PickSpot.
 
@@ -121,6 +121,19 @@ Does a buyer always find the order they just placed?
 - An order in the cached copy is found without asking the database.
 - An order placed a moment ago, not yet in the cache, is found by asking the
   database itself.
+
+### `lib/owner.test.ts` (6 tests)
+
+Can only the owner get in?
+
+- The sign-in cookie works until it runs out, and stops working when the
+  password is changed.
+- A cookie cannot be made without the shop's secret, nor made to last longer
+  by editing it.
+- The right password lets the owner in and clears earlier wrong tries.
+- After 5 wrong tries an address has to wait, even with the right password,
+  while other addresses are not held up.
+- The address may try again 15 minutes later.
 
 ### How they stay away from real data
 

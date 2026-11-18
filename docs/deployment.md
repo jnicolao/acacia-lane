@@ -14,30 +14,27 @@ it can live on the internet, and how to run it once that is done.
 
 | Works today | Not yet |
 | --- | --- |
-| The shop, cart, checkout and order pages, for anyone | A sign-in for the owner |
-| Orders placed with PickSpot | Private order pages |
+| The shop, cart, checkout and order pages, for anyone | Private order pages |
+| Orders placed with PickSpot | |
 | Updates from PickSpot, checked and applied | |
-| The owner's side, on the shop's own computer | |
+| The owner's side, on the shop's own computer or with the owner's password | |
 | Data on hosting without a lasting disk, in a Postgres database | |
 
 ## Two things to sort out first
 
 ### 1. Give the owner a way in
 
-The owner's side (`/admin/...`) opens only for a browser on the same computer
-as the shop. On a server, nobody is on that computer, so nobody could open
-Orders or Settings, and nobody could save the API key.
+On a server nobody uses the shop's own computer, so the owner signs in with a
+password instead. Set it as the `ADMIN_PASSWORD` environment variable where
+the shop runs. On Vercel: the project's **Settings → Environment Variables**,
+then deploy again. Choose a long password that is not used anywhere else.
 
-What is needed is a sign-in: a password or an account, checked before any
-owner's page or button. The one place to change is `lib/local-only.ts`; every
-owner's page and action already calls it. Whatever replaces it should:
+Then open `/admin/settings` on the live shop, sign in, and the owner's side
+works as it does on your own computer. How the sign-in is kept safe is in
+[Who can open what](configuration.md#who-can-open-what).
 
-- keep the rule that every button's action checks for itself, not only the
-  page it sits on;
-- use a cookie that scripts cannot read and that is only sent over HTTPS;
-- slow down repeated wrong guesses.
-
-Do not simply remove the check. The owner's side shows customers' phone
+Without `ADMIN_PASSWORD` the owner's side stays closed to everyone outside
+the shop's own computer. That is on purpose: it shows customers' phone
 numbers and can replace the API key.
 
 ### 2. Decide where data lives
@@ -64,7 +61,7 @@ any number of copies can run at once.
 | --- | --- | --- | --- |
 | Your own computer with a tunnel | No | Files, as they are | Works today. Good for showing it to someone |
 | A server or container with a lasting disk | Yes | Files, as they are | The shortest path |
-| Vercel, Netlify and similar | Yes | A Postgres database (`DATABASE_URL`) | Works once the sign-in exists |
+| Vercel, Netlify and similar | Yes | A Postgres database (`DATABASE_URL`) | Works with `ADMIN_PASSWORD` and `DATABASE_URL` set |
 
 ## Running it on a server
 
@@ -146,7 +143,8 @@ tunnel. The steps are in
 [Getting started](getting-started.md#3-give-the-shop-a-public-address).
 
 Through the tunnel, visitors can use the shop and PickSpot can deliver
-updates. The owner's side stays closed to them and open to you on
+updates. The owner's side asks them for the owner's password (or stays shut
+if `ADMIN_PASSWORD` is not set), and opens for you on
 `http://localhost:3000/admin`.
 
 The tunnel addresses the shop accepts while running with `npm run dev` are

@@ -2,10 +2,10 @@ import { headers } from "next/headers";
 
 const LOCAL_HOST = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/;
 
-// The admin area has no login, and it can change where the saved API key is
-// sent. So it only answers requests made directly to this machine: a request
-// that came through a tunnel carries the tunnel's public name in Host or
-// X-Forwarded-Host. Every admin page and every admin action must check this.
+// True for a request made directly to this machine: a request that came
+// through a tunnel or a public address carries that name in Host or
+// X-Forwarded-Host. On the shop's own computer the owner's side opens without
+// a password (see isOwner in lib/owner.ts), and practice steps need it.
 export async function isLocalRequest(): Promise<boolean> {
   const requestHeaders = await headers();
   const hosts = [

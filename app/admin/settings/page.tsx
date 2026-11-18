@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { CopyField, SettingsForm, TestConnection } from "@/components/admin-forms";
-import { LocalOnly } from "@/components/local-only";
+import { CopyField, SettingsForm, SignOutButton, TestConnection } from "@/components/admin-forms";
+import { OwnerOnly } from "@/components/owner-only";
 import { readDb, type WebhookLogEntry } from "@/lib/db";
-import { isLocalRequest } from "@/lib/local-only";
+import { isOwner, isSignedIn } from "@/lib/owner";
 import {
   getPublicUrl,
   getSettings,
@@ -34,7 +34,7 @@ export const instant = false;
 
 export default async function AdminSettings() {
   await connection(); // always render from the data as it is now
-  if (!(await isLocalRequest())) return <LocalOnly />;
+  if (!(await isOwner())) return <OwnerOnly />;
   const settings = await getSettings();
   const publicUrl = await getPublicUrl();
   const db = await readDb();
@@ -44,12 +44,15 @@ export default async function AdminSettings() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+        {(await isSignedIn()) && <SignOutButton />}
+      </div>
       <p className="mb-6 mt-1 max-w-2xl text-sm text-stone-600">
         Connect your shop to PickSpot so your orders can be delivered. You
         find the API key and the signing secret in your PickSpot business
-        account, under Settings → Integrations. They are stored on the
-        shop&apos;s own computer and are never shown in full again.
+        account, under Settings → Integrations. They are kept with the
+        shop&apos;s own data and are never shown in full again.
       </p>
       {isMockMode() && (
         <p className="mb-6 rounded-md bg-amber-100 p-3 text-sm text-amber-950">

@@ -128,13 +128,21 @@ and paste the new webhook URL into the PickSpot account.
 
 ### "This area is for the shop owner"
 
-The owner's side only opens on the computer the shop runs on, at
-`http://localhost:3000/admin`. Through a tunnel or a domain it is closed on
-purpose. See [Who can open what](configuration.md#who-can-open-what).
+Away from the shop's own computer, the owner's side asks for the owner's
+password. If there is no password box, `ADMIN_PASSWORD` is not set where the
+shop runs: set it (on Vercel, under Settings → Environment Variables) and
+deploy again. On the shop's own computer, `http://localhost:3000/admin` opens
+without a password. See [Who can open what](configuration.md#who-can-open-what).
 
-### A button says "This can only be done on the computer the shop runs on"
+### "Too many wrong tries"
 
-The same rule, applied to a button rather than a page.
+Five wrong passwords came from your address within 15 minutes. Wait 15
+minutes, then try again with the right one.
+
+### A button says "Sign in as the shop owner first"
+
+The sign-in ran out (after 7 days), or the password was changed. Reload the
+page and sign in again.
 
 ## Running the shop
 

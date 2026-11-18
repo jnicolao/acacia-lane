@@ -240,7 +240,7 @@ again at 1001 and get somebody's old order back.
 | `api/checkout/orders/route.ts` | Places an order |
 | `api/pickspot/webhook/route.ts` | Receives an update from PickSpot |
 | `orders/actions.ts` | `catchUpAction`: asks PickSpot about an open order |
-| `admin/actions.ts` | Saves settings, checks the connection, checks an order for updates, plays a practice step |
+| `admin/actions.ts` | Saves settings, checks the connection, checks an order for updates, plays a practice step, signs the owner in and out |
 
 **Logic** (`lib/`)
 
@@ -259,7 +259,8 @@ again at 1001 and get somebody's old order back.
 | `wording.ts` | Status names, what-happened sentences, order history, the Activity feed |
 | `db.ts`, `data-file.ts` | The shapes of what is stored, and reading and saving it, in files or in Postgres |
 | `settings.ts` | The saved settings, the environment, practice mode on or off |
-| `local-only.ts` | Decides whether a request may open the owner's side |
+| `owner.ts` | Decides whether a request may open the owner's side; the owner's sign-in |
+| `local-only.ts` | Tells a request made on the shop's own computer from one from outside |
 | `format.ts` | Money and dates |
 | `types.ts` | The shapes of what PickSpot sends and expects |
 
@@ -276,7 +277,7 @@ again at 1001 and get somebody's old order back.
 | `admin-forms.tsx` | The owner's forms and buttons |
 | `admin-tabs.tsx` | The owner's menu, with the page being shown underlined |
 | `no-webhook-notice.tsx` | The "Live updates are off" notice |
-| `local-only.tsx` | What a visitor sees instead of the owner's side |
+| `owner-only.tsx` | What a visitor sees instead of the owner's side: the password box |
 
 ## Why it is built this way
 

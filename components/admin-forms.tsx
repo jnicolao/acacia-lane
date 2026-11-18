@@ -5,6 +5,8 @@ import {
   checkForUpdatesAction,
   practiceUpdateAction,
   saveSettingsAction,
+  signInAction,
+  signOutAction,
   testConnectionAction,
   type ActionResult,
 } from "@/app/admin/actions";
@@ -183,6 +185,38 @@ export function PracticePanel({ reference }: { reference: string }) {
         </button>
       </div>
       <Result result={result} />
+    </form>
+  );
+}
+
+export function SignInForm() {
+  const [result, signIn, signingIn] = useActionState(signInAction, null);
+  return (
+    <form action={signIn} className="mt-4 max-w-sm space-y-4">
+      <label className="block text-sm font-medium">
+        Password
+        <input
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          required
+          className={INPUT}
+        />
+      </label>
+      <button type="submit" disabled={signingIn} className={PRIMARY_BUTTON}>
+        {signingIn ? "Signing in…" : "Sign in"}
+      </button>
+      <Result result={result} />
+    </form>
+  );
+}
+
+export function SignOutButton() {
+  return (
+    <form action={signOutAction}>
+      <button type="submit" className={BUTTON}>
+        Sign out
+      </button>
     </form>
   );
 }
