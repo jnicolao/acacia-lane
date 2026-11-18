@@ -274,6 +274,7 @@ again at 1001 and get somebody's old order back.
 | `checkout-form.tsx` | The checkout form |
 | `auto-refresh.tsx` | Keeps an open page current |
 | `status-badge.tsx` | The coloured status label |
+| `copy-link.tsx` | The "Copy the link" button on the order page |
 | `admin-forms.tsx` | The owner's forms and buttons |
 | `admin-tabs.tsx` | The owner's menu, with the page being shown underlined |
 | `no-webhook-notice.tsx` | The "Live updates are off" notice |

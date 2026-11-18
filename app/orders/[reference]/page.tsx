@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { AutoRefresh } from "@/components/auto-refresh";
+import { CopyLink } from "@/components/copy-link";
 import { StatusBadge } from "@/components/status-badge";
 import { findOrder } from "@/lib/db";
 import { kes } from "@/lib/format";
@@ -63,25 +64,13 @@ export default async function OrderConfirmation({
         </div>
         <p className="mt-2 text-emerald-950">{NEXT_STEP[order.status]}</p>
         {order.status === "AWAITING_RECIPIENT" && pickspot?.claim?.claimUrl && (
-          <p className="mt-3 text-sm">
-            Sent to <strong>{contact}</strong>. No message?{" "}
-            <a
-              href={pickspot.claim.claimUrl}
-              className="font-semibold text-emerald-800 underline"
-            >
-              Open the link here
-            </a>
-          </p>
-        )}
-        {pickspot?.dispatch?.trackingUrl && (
-          <p className="mt-3 text-sm">
-            <a
-              href={pickspot.dispatch.trackingUrl}
-              className="font-semibold text-emerald-800 underline"
-            >
-              Track the rider
-            </a>
-          </p>
+          <div className="mt-3 text-sm">
+            <p>
+              Sent to <strong>{contact}</strong>. No message? Copy the link and
+              share it with your customer.
+            </p>
+            <CopyLink url={pickspot.claim.claimUrl} />
+          </div>
         )}
       </section>
 
