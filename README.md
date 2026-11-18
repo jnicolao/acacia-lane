@@ -180,6 +180,11 @@ Also worth knowing: the customer's order page can be opened by anyone who
 knows the order number, and product pictures reach PickSpot only if PickSpot
 accepts picture uploads from the shop's API key.
 
+## Licence
+
+The code is under the [MIT licence](LICENSE). The product photos in
+`public/products/` are not: they are under the Unsplash License (see Credits).
+
 ## Credits
 
 Product photos are from [Unsplash](https://unsplash.com), used under the
