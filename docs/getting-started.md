@@ -77,8 +77,9 @@ next to the order number changes with it.
 ### 3. See it from the customer's side
 
 Press **See what the customer sees** at the top of the order. The customer's
-page has followed along: it shows the same status, the fees and the total,
-and a link to follow the rider once one is on the way.
+page has followed along: it shows the same status, the fees and the total.
+While the order waits for the customer, it has a **Copy the link** button, so
+the WhatsApp link can be shared if the message did not arrive.
 
 ### 4. Look at Activity
 
