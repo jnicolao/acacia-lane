@@ -181,8 +181,7 @@ The shop works end to end on one computer. Before it can live on the internet,
   its data in a Postgres database instead.
 
 Also worth knowing: the customer's order page can be opened by anyone who
-knows the order number, and product pictures reach PickSpot only if PickSpot
-accepts picture uploads from the shop's API key.
+knows the order number.
 
 ## Licence
 

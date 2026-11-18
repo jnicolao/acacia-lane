@@ -28,7 +28,7 @@ address they go to is `PICKSPOT_API_URL` (see
 | When | Call | Why |
 | --- | --- | --- |
 | The owner presses "Check connection" | `GET /integrations/me` | To see that the key works and which business it belongs to |
-| An order is placed, once per new product picture | `POST /file/upload-image/parcel-item` | To give PickSpot the product's picture |
+| An order is placed, once per new product picture | `POST /integrations/images` | To give PickSpot the product's picture |
 | An order is placed | `POST /integrations/checkout/orders` | To create the order |
 | "Check for updates" is pressed, or an open order page catches up | `GET /integrations/checkout/orders/{order number}` | To learn where the order is now |
 
@@ -131,9 +131,11 @@ notes that PickSpot first answered 409.
 PickSpot shows a picture next to each item. The order does not carry the
 picture itself; it is uploaded first (`lib/item-images.ts`):
 
-1. The shop sends the photo: `POST /file/upload-image/parcel-item`, as
-   `multipart/form-data`, with the file in a field named `image`.
-2. PickSpot answers `{ "key": "…" }`.
+1. The shop sends the photo with its API key: `POST /integrations/images`, as
+   `multipart/form-data`, with the file in a field named `image` (any image
+   type, up to 10 MB).
+2. PickSpot answers `201` with `{ "key": "…", "url": "…" }`. The `url` is only
+   for previewing; the shop does not use it.
 3. The shop puts that key in the item's `imageKeys`.
 
 Each picture is uploaded once. The shop remembers the key against the PickSpot
@@ -143,8 +145,9 @@ everything is uploaded again there.
 
 A picture never holds up an order. If an upload fails, the shop stops trying
 for that order, places it without pictures, and writes the reason next to the
-order's first update under "Technical details". The usual reason is that
-PickSpot does not accept picture uploads from the shop's API key.
+order's first update under "Technical details". PickSpot refuses a picture
+that is missing, is not an image, or is larger than 10 MB (400), and any
+upload with a wrong API key (401).
 
 ## What PickSpot answers
 
