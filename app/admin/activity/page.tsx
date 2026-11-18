@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { AutoRefresh } from "@/components/auto-refresh";
-import { LocalOnly } from "@/components/local-only";
+import { OwnerOnly } from "@/components/owner-only";
 import { NoWebhookNotice } from "@/components/no-webhook-notice";
 import { readDb } from "@/lib/db";
 import { dateTime } from "@/lib/format";
-import { isLocalRequest } from "@/lib/local-only";
+import { isOwner } from "@/lib/owner";
 import { shopActivity } from "@/lib/wording";
 
 // This page shows live data, so it is fine for a navigation to wait for it.
@@ -13,7 +13,7 @@ export const instant = false;
 
 export default async function AdminActivity() {
   await connection(); // always render from the data as it is now
-  if (!(await isLocalRequest())) return <LocalOnly />;
+  if (!(await isOwner())) return <OwnerOnly />;
   const activity = shopActivity(await readDb()).slice(0, 100);
 
   return (

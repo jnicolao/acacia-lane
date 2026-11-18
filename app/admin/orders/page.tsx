@@ -1,20 +1,20 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { AutoRefresh } from "@/components/auto-refresh";
-import { LocalOnly } from "@/components/local-only";
+import { OwnerOnly } from "@/components/owner-only";
 import { NoWebhookNotice } from "@/components/no-webhook-notice";
 import { StatusBadge } from "@/components/status-badge";
 import { readDb } from "@/lib/db";
 import { dateTime, kes } from "@/lib/format";
 import { formatPhone } from "@/lib/phone";
-import { isLocalRequest } from "@/lib/local-only";
+import { isOwner } from "@/lib/owner";
 
 // This page shows live data, so it is fine for a navigation to wait for it.
 export const instant = false;
 
 export default async function AdminOrders() {
   await connection(); // always render from the data as it is now
-  if (!(await isLocalRequest())) return <LocalOnly />;
+  if (!(await isOwner())) return <OwnerOnly />;
   const orders = (await readDb()).orders.toReversed();
 
   return (

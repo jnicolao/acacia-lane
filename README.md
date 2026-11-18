@@ -44,6 +44,7 @@ The orders and phone numbers in the screenshots are made up.
   is on the way to collect the order").
 - Watch one Activity feed across all orders.
 - Connect the shop to PickSpot on a single Settings page.
+- Sign in from anywhere with one owner's password.
 
 **Under the bonnet**
 
@@ -150,7 +151,7 @@ lib/
   pickspot-mock.ts              the pretend PickSpot for practice mode
   signature.ts  webhook.ts      checking and applying PickSpot's updates
   orders.ts  db.ts  data-file.ts  orders and where they are kept
-  settings.ts  local-only.ts    settings, and who may open the owner's side
+  settings.ts  owner.ts         settings, and who may open the owner's side
 public/products/                product photos
 docs/                           the guides listed above
 ```
@@ -172,8 +173,9 @@ docs/                           the guides listed above
 The shop works end to end on one computer. Before it can live on the internet,
 [Putting it online](docs/deployment.md) describes what is needed:
 
-- **The owner's side has no sign-in yet.** It only opens on the computer the
-  shop runs on.
+- **The owner needs a password online.** On the shop's own computer the
+  owner's side opens by itself. Anywhere else it asks for the password set in
+  `ADMIN_PASSWORD`.
 - **Data needs a lasting home.** Files suit a server with a lasting disk. On
   hosting that starts fresh for every request, such as Vercel, the shop keeps
   its data in a Postgres database instead.

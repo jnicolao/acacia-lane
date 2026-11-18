@@ -4,12 +4,12 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { CheckForUpdates, PracticePanel } from "@/components/admin-forms";
 import { AutoRefresh } from "@/components/auto-refresh";
-import { LocalOnly } from "@/components/local-only";
+import { OwnerOnly } from "@/components/owner-only";
 import { NoWebhookNotice } from "@/components/no-webhook-notice";
 import { StatusBadge } from "@/components/status-badge";
 import { findOrder } from "@/lib/db";
 import { dateTime, kes } from "@/lib/format";
-import { isLocalRequest } from "@/lib/local-only";
+import { isOwner } from "@/lib/owner";
 import { formatPhone } from "@/lib/phone";
 import { products } from "@/lib/products";
 import { isMockMode } from "@/lib/settings";
@@ -31,7 +31,7 @@ export default async function AdminOrder({
   params,
 }: PageProps<"/admin/orders/[reference]">) {
   await connection(); // always render from the data as it is now
-  if (!(await isLocalRequest())) return <LocalOnly />;
+  if (!(await isOwner())) return <OwnerOnly />;
   const { reference } = await params;
   const order = await findOrder(reference);
   if (!order) notFound();

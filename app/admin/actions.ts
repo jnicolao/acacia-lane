@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { updateDb } from "@/lib/db";
 import { isLocalRequest } from "@/lib/local-only";
 import { applySnapshot } from "@/lib/orders";
+import { isOwner, signIn, signOut } from "@/lib/owner";
 import { getMe, getOrder } from "@/lib/pickspot";
 import { recordMockEvent } from "@/lib/pickspot-mock";
 import {
@@ -17,14 +18,15 @@ import {
 import { signPayload } from "@/lib/signature";
 import { EVENT_TEXT, STATUS_LABEL } from "@/lib/wording";
 
-// Every action here checks isLocalRequest() itself: a Server Action can be
-// called from any page, so the check on the admin pages does not cover it.
+// Every action here checks isOwner() itself: a Server Action can be called
+// from any page, so the check on the admin pages does not cover it. Signing
+// in is the one exception.
 
 export type ActionResult = { ok: boolean; message: string; detail?: string } | null;
 
-const NOT_LOCAL: ActionResult = {
+const NOT_OWNER: ActionResult = {
   ok: false,
-  message: "This can only be done on the computer the shop runs on.",
+  message: "Sign in as the shop owner first.",
 };
 
 const field = (form: FormData, name: string) => String(form.get(name) ?? "").trim();
@@ -34,7 +36,7 @@ export async function saveSettingsAction(
   _previous: ActionResult,
   form: FormData,
 ): Promise<ActionResult> {
-  if (!(await isLocalRequest())) return NOT_LOCAL;
+  if (!(await isOwner())) return NOT_OWNER;
 
   const publicUrl = field(form, "publicUrl");
   if (publicUrl && !isHttpUrl(publicUrl)) {
@@ -68,7 +70,7 @@ function pickspotProblem(status: number): string {
 }
 
 export async function testConnectionAction(): Promise<ActionResult> {
-  if (!(await isLocalRequest())) return NOT_LOCAL;
+  if (!(await isOwner())) return NOT_OWNER;
 
   const result = await getMe();
   if (!result.ok) {
@@ -95,7 +97,7 @@ export async function checkForUpdatesAction(
   _previous: ActionResult,
   form: FormData,
 ): Promise<ActionResult> {
-  if (!(await isLocalRequest())) return NOT_LOCAL;
+  if (!(await isOwner())) return NOT_OWNER;
 
   const reference = field(form, "reference");
   const result = await getOrder(reference);
@@ -125,7 +127,9 @@ export async function practiceUpdateAction(
   _previous: ActionResult,
   form: FormData,
 ): Promise<ActionResult> {
-  if (!(await isLocalRequest())) return NOT_LOCAL;
+  if (!(await isLocalRequest())) {
+    return { ok: false, message: "Practice steps only work on the computer the shop runs on." };
+  }
   if (!isMockMode()) return { ok: false, message: "Only available in practice mode." };
 
   const envelope = await recordMockEvent(field(form, "reference"), field(form, "event"));
@@ -145,4 +149,30 @@ export async function practiceUpdateAction(
   return response.ok
     ? { ok: true, message: `Done: ${(EVENT_TEXT[envelope.event] ?? envelope.event).toLowerCase()}.` }
     : { ok: false, message: "The shop did not accept the update.", detail: await response.text() };
+}
+
+// Open to anyone: this is how the owner gets in.
+export async function signInAction(
+  _previous: ActionResult,
+  form: FormData,
+): Promise<ActionResult> {
+  const result = await signIn(String(form.get("password") ?? ""));
+  if (result === "ok") {
+    refresh();
+    return null;
+  }
+  return {
+    ok: false,
+    message:
+      result === "wait"
+        ? "Too many wrong tries. Wait 15 minutes, then try again."
+        : result === "off"
+          ? "Signing in is not set up for this shop yet."
+          : "That password is not right.",
+  };
+}
+
+export async function signOutAction(): Promise<void> {
+  await signOut();
+  refresh();
 }
