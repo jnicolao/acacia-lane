@@ -161,7 +161,6 @@ latest one on the order and uses these parts of it:
 | `claim.whatsapp` | Whether the WhatsApp message is on its way, sent, or could not be sent |
 | `parcelCode` | The PickSpot parcel number shown to the owner |
 | `dispatch.scheduledFor`, `dispatch.courier.name` | When the rider is due and who it is |
-| `dispatch.trackingUrl` | The "Follow the rider on the map" link on the owner's order page |
 | `kind`, `rawStatus`, `orderId`, `claimId` | Shown only under "Technical details" |
 
 An order starts as a claim (`kind: CLAIM`): PickSpot is waiting for the
