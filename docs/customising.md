@@ -4,6 +4,7 @@ How to change the shop's name, what it sells, how it looks and what it says.
 Each change is in one place.
 
 - [The name](#the-name)
+- [The logo](#the-logo)
 - [The products](#the-products)
 - [The photos](#the-photos)
 - [The wording](#the-wording)
@@ -20,14 +21,29 @@ export const SHOP_INITIALS = "AL";
 ```
 
 - `SHOP_NAME` appears in the header, the footer and the browser tab.
-- `SHOP_INITIALS` is the logo mark in the header and the start of every order
-  number (`AL-7K2F-1001`).
+- `SHOP_INITIALS` is the start of every order number (`AL-7K2F-1001`).
 
 Changing the initials changes the numbers of new orders only. Orders already
 placed keep theirs, because PickSpot knows them by that number.
 
 The strapline under the name on the front page is in `app/page.tsx`, and the
 description search engines see is in `app/layout.tsx`.
+
+## The logo
+
+The logo is an acacia tree whose trunk widens into a lane, with the sun behind
+it. It is drawn in `app/icon.svg`, which the header shows next to the name and
+browsers show in the tab.
+
+Two more files are pictures of it, for places that cannot show a drawing:
+
+| File | Where it shows | Size |
+| --- | --- | --- |
+| `app/favicon.ico` | Older browsers, and anything that asks for `/favicon.ico` | 16, 32 and 48 px |
+| `app/apple-icon.png` | A phone's home screen, when the shop is added to it | 180 × 180, square corners: the phone rounds them |
+
+If you change `app/icon.svg`, make these two again from it (any favicon
+maker will do) so that every place shows the same logo.
 
 ## The products
 
@@ -115,14 +131,16 @@ status.
 The shop is styled with Tailwind CSS classes written next to the elements they
 style. There is no theme file.
 
-- **Accent**: `emerald-700` (buttons, links, the logo), `emerald-800` on
-  hover, `emerald-50` for the highlighted box at checkout.
+- **Accent**: `emerald-700` (buttons, links), `emerald-800` on hover,
+  `emerald-50` for the highlighted box at checkout. The logo uses the same
+  green, written as `#047857` in `app/icon.svg`.
 - **Text and lines**: the `stone` greys.
 - **Status badges**: `components/status-badge.tsx` groups statuses into
   waiting (amber), moving (sky), delivered (emerald) and ended badly (red).
 - **Practice mode**: amber.
 
-To change the accent, replace `emerald` across `app/` and `components/`.
+To change the accent, replace `emerald` across `app/` and `components/`, and
+the green in the logo (see [The logo](#the-logo)).
 
 The typeface is Geist, loaded in `app/layout.tsx`.
 

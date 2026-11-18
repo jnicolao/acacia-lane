@@ -27,7 +27,7 @@ function Result({ result }: { result: ActionResult }) {
         result.ok ? "border-emerald-300 bg-emerald-50" : "border-red-300 bg-red-50"
       }`}
     >
-      {result.ok ? "✓ " : "✗ "}
+      {result.ok ? "" : "Error: "}
       {result.message}
       {result.detail && (
         <span className="mt-1 block text-xs break-words text-stone-600">
