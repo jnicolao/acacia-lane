@@ -145,7 +145,7 @@ export function CheckoutForm({ mock }: { mock: boolean }) {
           {invalid
             ? "Enter a mobile number, like 0712 345 678 or +254 712 345 678."
             : phone
-              ? `✓ The link goes to ${formatPhone(phone)} on WhatsApp.`
+              ? `The link goes to ${formatPhone(phone)} on WhatsApp.`
               : "Use the number you have WhatsApp on: the link is sent there."}
         </p>
 

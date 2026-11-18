@@ -135,7 +135,7 @@ export default async function AdminSettings() {
                 </div>
                 <p className="mt-2">
                   {entry.signatureValid ? (
-                    <span className="font-medium text-emerald-800">✓ Signature valid</span>
+                    <span className="font-medium text-emerald-800">Signature valid</span>
                   ) : (
                     <span className="font-medium text-red-800">
                       ✗ Signature not valid: {entry.reason}

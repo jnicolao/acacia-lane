@@ -23,7 +23,7 @@ It is built for phones first:
   <img src="docs/images/checkout-phone.jpg" alt="Checkout on a phone" width="260">
 </p>
 
-Screenshots are from practice mode, which is why the yellow banner is there.
+The orders and phone numbers in the screenshots are made up.
 
 ## What it does
 
@@ -126,6 +126,7 @@ sequenceDiagram
 
 ```text
 app/
+  icon.svg                      the logo, in the header and the browser tab
   page.tsx                      the shop's front page
   cart/  checkout/              cart and checkout
   orders/[reference]/           the customer's order page

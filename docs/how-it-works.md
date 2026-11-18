@@ -267,11 +267,12 @@ again at 1001 and get somebody's old order back.
 | --- | --- |
 | `add-to-cart.tsx` | The "Add to cart" button and the − 1 + stepper |
 | `use-cart.ts` | The cart, kept in the browser |
-| `cart-link.tsx` | "Cart" in the header, with the item count |
+| `header-nav.tsx` | "Shop" and "Cart" in the header, with the item count and the page being shown in green |
 | `checkout-form.tsx` | The checkout form |
 | `auto-refresh.tsx` | Keeps an open page current |
 | `status-badge.tsx` | The coloured status label |
 | `admin-forms.tsx` | The owner's forms and buttons |
+| `admin-tabs.tsx` | The owner's menu, with the page being shown underlined |
 | `no-webhook-notice.tsx` | The "Live updates are off" notice |
 | `local-only.tsx` | What a visitor sees instead of the owner's side |
 
